@@ -1,6 +1,5 @@
 
-
-
+// pin declarations
 int redPin = A3;    
 int greenPin = A4;
 int bluePin = A5;
@@ -8,6 +7,7 @@ int redLED = 11;
 int greenLED = 10;
 int blueLED = 9;
 
+// variables
 int redValue = 0;  
 int greenValue = 0;
 int blueValue = 0;
@@ -16,6 +16,7 @@ int redDisplay = 0;
 int greenDisplay = 0;
 int blueDisplay = 0;
 
+// constants
 const int cUnknown = 0;
 const int cRed = 1;
 const int cGreen = 2;
@@ -81,7 +82,7 @@ void writeAllValues() {
   analogWrite(redLED, redDisplay);  
   analogWrite(greenLED, greenDisplay); 
   analogWrite(blueLED, blueDisplay);  
-  Serial.println(greenDisplay);
+  //Serial.println(greenDisplay);
 }
 
 int determineHighestValue (int pRed, int pGreen, int pBlue) {
