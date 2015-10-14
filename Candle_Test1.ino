@@ -68,44 +68,46 @@ class RGB_Candle
   void Flicker(unsigned long pCurrMillis) 
   {
     
-    if ((mState == cStateShowStd) && (pCurrMillis - mPrevMillis >= mDelay))
+    if (mState == cStateShowStd) 
     {
-      readAllValues();
-      writeAllValues(mRedValue, mGreenValue, mBlueValue);
-      mDelay = random(0,200);
-      mState = cStateShowDiff;
-    }
-    else if ((mState == cStateShowDiff) && (pCurrMillis - mPrevMillis >= mDelay)) 
-    {
-      // only vary the color on highest value to create flicker effect
-      readAllValues();
-      switch (determineHighestValue(mRedValue, mGreenValue, mBlueValue)) {
-        case 1:
-          writeAllValues(calculateFlickerDiff(mRedValue), mGreenValue, mBlueValue);
-          break;
-        case 2:
-          writeAllValues(mRedValue, calculateFlickerDiff(mGreenValue), mBlueValue);
-          break;
-        case 3:
-          writeAllValues(mRedValue, mGreenValue, calculateFlickerDiff(mBlueValue));
-          break;
+      if (pCurrMillis - mPrevMillis >= mDelay) 
+      {
+        readAllValues();
+        writeAllValues(mRedValue, mGreenValue, mBlueValue);
+        mDelay = random(0,200);
+        mState = cStateShowDiff;
+        mPrevMillis = pCurrMillis;
       }
-      mDelay = random(0,200);
-      mState = cStateShowStd;
+    }
+    else if (mState == cStateShowDiff) 
+    {
+      if (pCurrMillis - mPrevMillis >= mDelay) 
+      {
+        // only vary the color on highest value to create flicker effect
+        readAllValues();
+        switch (determineHighestValue(mRedValue, mGreenValue, mBlueValue)) {
+          case 1:
+            writeAllValues(calculateFlickerDiff(mRedValue), mGreenValue, mBlueValue);
+            break;
+          case 2:
+            writeAllValues(mRedValue, calculateFlickerDiff(mGreenValue), mBlueValue);
+            break;
+          case 3:
+            writeAllValues(mRedValue, mGreenValue, calculateFlickerDiff(mBlueValue));
+            break;
+        }
+        mDelay = random(0,100);
+        mState = cStateShowStd;
+        mPrevMillis = pCurrMillis;
+      }
     }
     else if (mState == cStateUnknown) 
     {
       readAllValues();
       mDelay = 0;
       mState = cStateShowStd;
+      mPrevMillis = pCurrMillis;
     }
-    else
-    {
-      mState = cStateUnknown;
-      mPrevMillis = 0;
-      mDelay = 0;
-    }
-    mPrevMillis = pCurrMillis;
   }
   
   private:
@@ -155,13 +157,13 @@ class RGB_Candle
       
       // calc range used for random function
       if (pStartVal <= 83) {
-        intRange = 30;
-      }
-      else if (pStartVal <= 166) {
         intRange = 40;
       }
-      else {
+      else if (pStartVal <= 166) {
         intRange = 50;
+      }
+      else {
+        intRange = 60;
       }
       
       // calculate return value
