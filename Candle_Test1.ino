@@ -18,6 +18,7 @@
     215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
     
 enum CandleState {Unknown, ShowStd, ShowDiff};
+enum LEDColor {NoColor, Red, Green, Blue};
 
 class RGB_Candle 
 {
@@ -40,16 +41,6 @@ class RGB_Candle
   CandleState mState;
   unsigned long mPrevMillis;
   int mDelay;
-  
-  // constants
-  const int cColorUnknown = 0;
-  const int cColorRed = 1;
-  const int cColorGreen = 2;
-  const int cColorBlue = 3;
-  
- // const int cStateUnknown = 0;
- // const int cStateShowStd = 1;
- // const int cStateShowDiff = 2;
   
   public:
   RGB_Candle(int pRedPin, int pGreenPin, int pBluePin, int pRedLED, int pGreenLED, int pBlueLED) 
@@ -88,13 +79,13 @@ class RGB_Candle
         // only vary the color on highest value to create flicker effect
         readAllValues();
         switch (determineHighestValue(mRedValue, mGreenValue, mBlueValue)) {
-          case 1:
+          case Red:
             writeAllValues(calculateFlickerDiff(mRedValue), mGreenValue, mBlueValue);
             break;
-          case 2:
+          case Green:
             writeAllValues(mRedValue, calculateFlickerDiff(mGreenValue), mBlueValue);
             break;
-          case 3:
+          case Blue:
             writeAllValues(mRedValue, mGreenValue, calculateFlickerDiff(mBlueValue));
             break;
         }
@@ -130,24 +121,24 @@ class RGB_Candle
       analogWrite(mBlueLED, pgm_read_byte(&gamma[pBlueValue]));  
     }
   
-    int determineHighestValue (int pRed, int pGreen, int pBlue) {
+    LEDColor determineHighestValue (int pRed, int pGreen, int pBlue) {
       
-      int intReturn = cColorUnknown;
+      LEDColor lReturn = NoColor;
       
       if (pRed > pBlue) {
         if (pRed > pGreen)
-          intReturn = cColorRed;
+          lReturn = Red;
         else
-          intReturn = cColorGreen;
+          lReturn = Green;
       }
       else {
         if (pBlue > pGreen)
-          intReturn = cColorBlue;
+          lReturn = Blue;
         else
-          intReturn = cColorGreen;
+          lReturn = Green;
       }
       
-      return intReturn;
+      return lReturn;
     }
     
     int calculateFlickerDiff (int pStartVal) {
