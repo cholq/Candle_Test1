@@ -16,6 +16,8 @@
     144,146,148,150,152,154,156,158,160,162,164,167,169,171,173,175,
     177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
     215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
+    
+enum CandleState {Unknown, ShowStd, ShowDiff};
 
 class RGB_Candle 
 {
@@ -35,7 +37,7 @@ class RGB_Candle
   int mBlueLED;
   
   // vars to manage state of candle
-  int mState;
+  CandleState mState;
   unsigned long mPrevMillis;
   int mDelay;
   
@@ -45,9 +47,9 @@ class RGB_Candle
   const int cColorGreen = 2;
   const int cColorBlue = 3;
   
-  const int cStateUnknown = 0;
-  const int cStateShowStd = 1;
-  const int cStateShowDiff = 2;
+ // const int cStateUnknown = 0;
+ // const int cStateShowStd = 1;
+ // const int cStateShowDiff = 2;
   
   public:
   RGB_Candle(int pRedPin, int pGreenPin, int pBluePin, int pRedLED, int pGreenLED, int pBlueLED) 
@@ -60,7 +62,7 @@ class RGB_Candle
     mGreenLED = pGreenLED;
     mBlueLED = pBlueLED;
     
-    mState = 0;
+    mState = Unknown;
     mPrevMillis = 0;
     mDelay = 0;
   }
@@ -68,18 +70,18 @@ class RGB_Candle
   void Flicker(unsigned long pCurrMillis) 
   {
     
-    if (mState == cStateShowStd) 
+    if (mState == ShowStd) 
     {
       if (pCurrMillis - mPrevMillis >= mDelay) 
       {
         readAllValues();
         writeAllValues(mRedValue, mGreenValue, mBlueValue);
         mDelay = random(0,200);
-        mState = cStateShowDiff;
+        mState = ShowDiff;
         mPrevMillis = pCurrMillis;
       }
     }
-    else if (mState == cStateShowDiff) 
+    else if (mState == ShowDiff) 
     {
       if (pCurrMillis - mPrevMillis >= mDelay) 
       {
@@ -97,15 +99,15 @@ class RGB_Candle
             break;
         }
         mDelay = random(0,100);
-        mState = cStateShowStd;
+        mState = ShowStd;
         mPrevMillis = pCurrMillis;
       }
     }
-    else if (mState == cStateUnknown) 
+    else if (mState == Unknown) 
     {
       readAllValues();
       mDelay = 0;
-      mState = cStateShowStd;
+      mState = ShowStd;
       mPrevMillis = pCurrMillis;
     }
   }
